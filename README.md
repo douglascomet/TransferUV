@@ -9,7 +9,7 @@ http://www.brookewagstaff.com/modeling-texturing/transferring-uvs/
 " target="_blank"><img src="http://img.youtube.com/vi/gLuMgsd7YaI/0.jpg" 
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 
-The demo above shows how it works. 
+The demo above shows how it works. The function to call is transferUVAfterSkinning.transUI()
 
 It uses the Qt.py framework so it can work with PySide and PySide2:
 https://github.com/mottosso/Qt.py
