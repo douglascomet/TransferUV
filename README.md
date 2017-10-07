@@ -1,4 +1,4 @@
-# TransferUVAfterSkinning
+# Transfer UV After Skinning
 
 This Maya tool is used to transfer the UVs of a mesh to a skinned version of the mesh that has identical topology and prevents the generation of the undeletable "transferAttributes" node.
 
