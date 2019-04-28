@@ -135,14 +135,8 @@ class Transfer_UV(QtWidgets.QMainWindow):
 
         selection = cmds.ls(selection=True)
 
-        found_skin_cluster = False
-
-        if not len(selection):
-            self.skinned_mesh_le.setText(None)
-            self.popup_message('An object was not selected')
-        elif len(selection) != 1:
-            self.popup_message('Please select only one object')
-        elif len(selection) == 1:
+        if self._verify_selection(selection):
+            found_skin_cluster = False
 
             for history_node in cmds.listHistory(selection[0]):
                 if 'skinCluster' in history_node:
@@ -163,14 +157,19 @@ class Transfer_UV(QtWidgets.QMainWindow):
 
         selection = cmds.ls(selection=True)
 
-        if not len(selection):
-            self.uv_mesh_le.setText(None)
-            self.popup_message('An object was not selected')
-        elif len(selection) != 1:
-            self.popup_message('Please select only one object')
-        elif len(selection) == 1:
+        if self._verify_selection(selection):
             self.uv_mesh_le.setText(str(selection[0]))
             self.enable_transfer_uv()
+
+    def _verify_selection(self, selection):
+        if not selection:
+            self.popup_message('An object was not selected')
+            return False
+        elif len(selection) != 1:
+            self.popup_message('Select only one object')
+            return False
+        elif len(selection) == 1:
+            return True
 
     def popup_message(self, message):
         """
