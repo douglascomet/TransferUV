@@ -14,9 +14,6 @@
 # python_version  :2.7.14
 # =============================================================================
 
-import sys
-import maya.cmds
-
 # QtWidgets creates all widgets
 from Qt import QtWidgets
 from Qt import QtCore
@@ -24,25 +21,28 @@ from Qt import QtGui
 
 
 class Transfer_UV(QtWidgets.QMainWindow):
-    '''Tool meant to transfer a UV-ed mesh to a skinned mesh without leaving
-        additional nodes in construction history of the skinned mesh.
-    '''
+    """
+    Tool meant to transfer a UV-ed mesh to a skinned mesh without leaving additional nodes in
+    construction history of the skinned mesh.
+    """
 
     def __init__(self, parent=None):
-        '''Initilizes the PyQt Interface.
+        """
+        Initilizes the PyQt Interface.
 
         Keyword Arguments:
             parent {None} -- By having no parent, ui can be standalone
                                 (default: {None})
-        '''
+        """
 
         super(Transfer_UV, self).__init__(parent)
         self.init_ui()
 
     def init_ui(self):
-        '''Logic to create QtWidget's UI.
+        """
+        Logic to create QtWidget's UI.
+        """
 
-        '''
         # frame settings
         self.setWindowTitle('Transfer UVs after Skinning')
         # self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
@@ -65,11 +65,9 @@ class Transfer_UV(QtWidgets.QMainWindow):
         # skinned_mesh_layout, child of central_widget ------------------------
         skinned_mesh_layout = QtWidgets.QHBoxLayout()
 
-        # lbl = label
         skinned_mesh_lbl = QtWidgets.QLabel('Name of Skinned Mesh:')
         skinned_mesh_lbl.setAlignment(QtCore.Qt.AlignCenter)
 
-        # le = line edit
         self.skinned_mesh_le = QtWidgets.QLineEdit(None)
         self.skinned_mesh_le.setReadOnly(True)
 
@@ -78,11 +76,9 @@ class Transfer_UV(QtWidgets.QMainWindow):
         # uv_mesh_layout, child of central_widget -----------------------------
         uv_mesh_layout = QtWidgets.QHBoxLayout()
 
-        # lbl = label
         uv_mesh_lbl = QtWidgets.QLabel('Name of UVed Mesh:')
         uv_mesh_lbl.setAlignment(QtCore.Qt.AlignCenter)
 
-        # le = line edit
         self.uv_mesh_le = QtWidgets.QLineEdit(None)
         # self.uv_mesh_le.setPlaceholderText(None)
         self.uv_mesh_le.setReadOnly(True)
@@ -122,81 +118,88 @@ class Transfer_UV(QtWidgets.QMainWindow):
             str(self.skinned_mesh_le.text()), str(self.uv_mesh_le.text())))
 
     def enable_transfer_uv(self):
-        '''Checks if both self.uv_mesh_le and self.skinned_mesh_le have an
-            input before enabling self.transfer_btn
-        '''
+        """
+        Checks if both self.uv_mesh_le and self.skinned_mesh_le have an input before enabling self.transfer_btn
+        """
 
         if self.uv_mesh_le.text() and self.skinned_mesh_le.text():
             self.transfer_btn.setEnabled(True)
 
     def select_skinned_mesh(self):
-        '''Checks if selected object is a skinned mesh before storing and
+        """
+        Checks if selected object is a skinned mesh before storing and
             using the object
-        '''
+        """
 
-        tempSelection = cmds.ls(selection=True)
+        import maya.cmds as cmds # pylint: disable=import-error
 
-        foundSkinCluster = False
+        selection = cmds.ls(selection=True)
 
-        if not len(tempSelection):
+        found_skin_cluster = False
+
+        if not len(selection):
             self.skinned_mesh_le.setText(None)
             self.popup_message('An object was not selected')
-        elif len(tempSelection) != 1:
+        elif len(selection) != 1:
             self.popup_message('Please select only one object')
-        elif len(tempSelection) == 1:
+        elif len(selection) == 1:
 
-            for historyNode in cmds.listHistory(tempSelection[0]):
-                if 'skinCluster' in historyNode:
-                    self.skinned_mesh_le.setText(str(tempSelection[0]))
-                    foundSkinCluster = True
+            for history_node in cmds.listHistory(selection[0]):
+                if 'skinCluster' in history_node:
+                    self.skinned_mesh_le.setText(str(selection[0]))
+                    found_skin_cluster = True
                     self.enable_transfer_uv()
                     break
 
-            if not foundSkinCluster:
+            if not found_skin_cluster:
                 self.popup_message('Selected Object is not a Skinned Mesh')
 
     def select_uv_mesh(self):
-        '''Checks if selected object is a mesh and that only one object was
-            selected
-        '''
+        """
+        Checks if selected object is a mesh and that only one object was selected
+        """
 
-        tempSelection = cmds.ls(selection=True)
+        import maya.cmds as cmds # pylint: disable=import-error
 
-        if not len(tempSelection):
+        selection = cmds.ls(selection=True)
+
+        if not len(selection):
             self.uv_mesh_le.setText(None)
             self.popup_message('An object was not selected')
-
-        elif len(tempSelection) != 1:
+        elif len(selection) != 1:
             self.popup_message('Please select only one object')
-
-        elif len(tempSelection) == 1:
-            self.uv_mesh_le.setText(str(tempSelection[0]))
+        elif len(selection) == 1:
+            self.uv_mesh_le.setText(str(selection[0]))
             self.enable_transfer_uv()
 
     def popup_message(self, message):
-        '''Generic popup window with an OK button and displays message
+        """
+        Generic popup window with an OK button and displays message
         Generates QMessageBox with OK button. Used as a simple notification.
 
         Arguments:
             message {string} -- string to be generated in popup
-        '''
+        """
 
-        popupWindow = QtWidgets.QMessageBox()
+        popup_window = QtWidgets.QMessageBox()
 
-        popupWindow.setInformativeText(message)
-        popupWindow.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        popup_window.setInformativeText(message)
+        popup_window.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
-        popupWindow.exec_()
+        popup_window.exec_()
 
     def transfer_uvs(self, skin_mesh, uv_mesh):
-        '''UVs are transferred from the uv_mesh to
+        """
+        UVs are transferred from the uv_mesh to
 
         Arguments:
             skin_mesh {string} -- String used to identify object in Maya scene
                                     for the skinned mesh
             uv_mesh {string} -- String used to identify object in Maya scene
                                     for the mesh object
-        '''
+        """
+
+        import maya.cmds as cmds # pylint: disable=import-error
 
         orig_mesh = ''
         intermediate_obj_attr = ''
@@ -212,54 +215,36 @@ class Transfer_UV(QtWidgets.QMainWindow):
             return
 
         else:
-            skin_mesh_children = cmds.listRelatives(skin_mesh)
-
-            # search through relatives of the skin_mesh to look for the
-            # object 'ShapeOrig'
-            for x in skin_mesh_children:
+            # search through relatives of the skin_mesh to look for the 'ShapeOrig' object
+            for x in cmds.listRelatives(skin_mesh):
                 if 'ShapeOrig' in x:
                     orig_mesh = x
 
             # get list of orig_mesh's attributes
-            orig_mesh_attr = cmds.listAttr(orig_mesh)
-
-            # traverse attributes
-            for i in orig_mesh_attr:
+            for i in cmds.listAttr(orig_mesh):
                 if 'intermediate' in i.lower():
-
-                    # saves attribute name
-                    intermediate_obj_attr = str(i)
+                    intermediate_obj_attr = str(i) # saves attribute name
 
             # unchecks orig_mesh's intermediate_obj_attr to off
-            cmds.setAttr(('%s.%s' % (orig_mesh, intermediate_obj_attr)), 0)
+            cmds.setAttr('{0}.{1}'.format(orig_mesh, intermediate_obj_attr), 0)
 
             # select object with correct UVs followed by orig_mesh
             # to transfer attributes and UVs
             cmds.transferAttributes(
-                uv_mesh,
-                orig_mesh,
-                transferPositions=0,
-                transferNormals=0,
-                transferUVs=2,
-                transferColors=2,
-                sampleSpace=5,
-                sourceUvSpace='map1',
-                searchMethod=3,
-                flipUVs=0,
-                colorBorders=1)
+                uv_mesh, orig_mesh, transferPositions=0, transferNormals=0, transferUVs=2,
+                transferColors=2, sampleSpace=5, sourceUvSpace='map1', searchMethod=3,
+                flipUVs=0, colorBorders=1)
 
             # deletes construction history of oskin_mesh
             cmds.delete(orig_mesh, ch=True)
 
             # checks oskin_mesh's intermediate_obj_attr to on
-            cmds.setAttr(('%s.%s' % (orig_mesh, intermediate_obj_attr)), 1)
+            cmds.setAttr('{0}.{1}'.format(orig_mesh, intermediate_obj_attr), 1)
 
             self.popup_message('Successfully transfered UVs')
 
 
-MAIN_WINDOW = \
-    [o for o in QtWidgets.qApp.topLevelWidgets()
-        if o.objectName() == 'MayaWindow'][0]
+MAIN_WINDOW = [o for o in QtWidgets.qApp.topLevelWidgets() if o.objectName() == 'MayaWindow'][0]
 
 UI = Transfer_UV(MAIN_WINDOW)
 UI.show()
